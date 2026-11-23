@@ -1,0 +1,24 @@
+# Paramètres de KampusBank : aucune de ces valeurs n'est écrite dans le code (EC7).
+
+[persistance]
+# "json" (par défaut) ou "mysql"
+type = "json"
+# Chemin relatif au dossier de ce fichier
+fichier = "donnees/kampusbank.json"
+
+[administrateur]
+# Créé au premier lancement s'il n'existe pas encore ; le mot de passe est alors haché.
+email = "admin@kampusbank.fr"
+mot_de_passe = "Admin2026"
+nom = "Admin"
+prenom = "KampusBank"
+telephone = "0100000000"
+adresse = "1 place de la Banque, 75002 Paris"
+date_naissance = "01/01/1990"
+
+[securite]
+# RG3 : nombre d'échecs consécutifs avant blocage, et durée du blocage
+echecs_max = 5
+duree_blocage_minutes = 15
+# Coût du hachage bcrypt (4 à 31) : +1 double le temps de calcul
+cout_bcrypt = 12

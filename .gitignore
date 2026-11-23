@@ -1,0 +1,21 @@
+# Environnement virtuel
+.venv/
+
+# Fichiers générés par Python et les outils
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Données réelles de l'application (le jeu de démonstration, lui, est versionné)
+donnees/kampusbank.json
+*.tmp
+
+# Système et éditeurs
+.DS_Store
+.vscode/
+.idea/

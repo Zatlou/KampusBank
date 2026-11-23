@@ -1,0 +1,80 @@
+"""Chargement des paramètres de l'application depuis kampusbank.toml."""
+
+import tomllib
+from dataclasses import dataclass
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class ParametresPersistance:
+    """Type de persistance choisi et emplacement du fichier de données."""
+
+    type: str
+    fichier: Path
+
+
+@dataclass(frozen=True)
+class ParametresAdministrateur:
+    """Administrateur initial, créé au premier lancement."""
+
+    email: str
+    mot_de_passe: str
+    nom: str
+    prenom: str
+    telephone: str
+    adresse: str
+    date_naissance: str
+
+
+@dataclass(frozen=True)
+class ParametresSecurite:
+    """Seuils de la règle RG3 et coût du hachage des mots de passe."""
+
+    echecs_max: int
+    duree_blocage_minutes: int
+    cout_bcrypt: int
+
+
+@dataclass(frozen=True)
+class Parametres:
+    """Ensemble des paramètres lus dans le fichier de configuration."""
+
+    persistance: ParametresPersistance
+    administrateur: ParametresAdministrateur
+    securite: ParametresSecurite
+
+
+def charger_parametres(chemin: Path) -> Parametres:
+    """Lit le fichier TOML indiqué et renvoie des paramètres typés.
+
+    Le fichier de données est résolu par rapport au dossier du fichier de
+    configuration : l'application trouve ses données quel que soit le dossier
+    depuis lequel on la lance.
+    """
+    with chemin.open("rb") as fichier:
+        brut = tomllib.load(fichier)
+
+    persistance = brut["persistance"]
+    administrateur = brut["administrateur"]
+    securite = brut["securite"]
+
+    return Parametres(
+        persistance=ParametresPersistance(
+            type=str(persistance["type"]),
+            fichier=chemin.parent / str(persistance["fichier"]),
+        ),
+        administrateur=ParametresAdministrateur(
+            email=str(administrateur["email"]),
+            mot_de_passe=str(administrateur["mot_de_passe"]),
+            nom=str(administrateur["nom"]),
+            prenom=str(administrateur["prenom"]),
+            telephone=str(administrateur["telephone"]),
+            adresse=str(administrateur["adresse"]),
+            date_naissance=str(administrateur["date_naissance"]),
+        ),
+        securite=ParametresSecurite(
+            echecs_max=int(securite["echecs_max"]),
+            duree_blocage_minutes=int(securite["duree_blocage_minutes"]),
+            cout_bcrypt=int(securite["cout_bcrypt"]),
+        ),
+    )
