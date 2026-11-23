@@ -42,10 +42,21 @@ Au premier lancement, l'administrateur décrit dans `kampusbank.toml` est créé
 (par défaut `admin@kampusbank.fr` / `Admin2026`). Les clients créent leur compte
 depuis l'écran de connexion.
 
+## Données de démonstration
+
+```bash
+python -m kampusbank.demo
+```
+
+Ajoute 5 clients, 10 comptes et 35 opérations, en passant par les services (les
+règles de gestion s'appliquent). Mot de passe de tous les clients : `Demo2026`
+(par exemple `lea.martin@demo.fr`). Relancer la commande n'ajoute rien de plus.
+
 ## Configuration
 
 Tous les paramètres variables sont dans `kampusbank.toml` : type de persistance,
-fichier de données, administrateur initial, seuils de blocage des connexions.
+fichier de données, administrateur initial, seuils de blocage des connexions,
+montant minimum d'une opération et maximum d'un retrait.
 
 ## Organisation du code
 
