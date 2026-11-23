@@ -1,26 +1,30 @@
 """Validation centralisée des données saisies (EC5).
 
 Chaque règle est écrite une seule fois ici et réutilisée par l'inscription, la
-modification du profil et, au jalon 2, les opérations bancaires. Chaque fonction
-renvoie la valeur nettoyée ou lève une exception métier.
+modification du profil et les opérations bancaires. Chaque fonction renvoie la
+valeur nettoyée ou lève une exception métier.
 """
 
 import re
 from datetime import date, datetime
+from decimal import Decimal
 
 from kampusbank.domaine.exceptions import (
     ChampObligatoireError,
     DateInvalideError,
     EmailInvalideError,
+    MontantInvalideError,
     MotDePasseInvalideError,
     TelephoneInvalideError,
 )
 
 _MOTIF_EMAIL = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 _MOTIF_TELEPHONE = re.compile(r"[0-9]{10}")
+_MOTIF_MONTANT = re.compile(r"[0-9]{1,12}([.,][0-9]{1,2})?")
 _LONGUEUR_MIN_MOT_DE_PASSE = 8
 _OCTETS_MAX_MOT_DE_PASSE = 72
 _FORMAT_DATE = "%d/%m/%Y"
+_CENTIME = Decimal("0.01")
 
 
 def valider_obligatoire(valeur: str, nom_du_champ: str) -> str:
@@ -83,6 +87,39 @@ def lire_date(texte: str) -> date:
         ) from None
 
 
+def lire_date_facultative(texte: str) -> date | None:
+    """Comme lire_date, mais un champ vide donne None (filtre sans borne)."""
+    return lire_date(texte) if texte.strip() else None
+
+
 def formater_date(valeur: date) -> str:
     """Écrit une date au format JJ/MM/AAAA, celui attendu par lire_date."""
     return valeur.strftime(_FORMAT_DATE)
+
+
+def valider_montant(montant: Decimal) -> Decimal:
+    """RG17 : montant strictement positif, avec 2 décimales au plus."""
+    if not montant.is_finite() or montant <= 0:
+        raise MontantInvalideError("Le montant doit être un nombre positif.")
+    if montant != montant.quantize(_CENTIME):
+        raise MontantInvalideError("Le montant ne peut pas avoir plus de 2 décimales.")
+    return montant.quantize(_CENTIME)
+
+
+def lire_montant(texte: str) -> Decimal:
+    """RG17 : convertit un montant saisi (« 12 », « 12,5 », « 1 250.00 »).
+
+    Le texte est converti directement en Decimal, sans passer par un float :
+    en virgule flottante, 0.1 + 0.2 ne vaut pas 0.3.
+    """
+    compact = texte.replace(" ", "").replace(" ", "")
+    if not _MOTIF_MONTANT.fullmatch(compact):
+        raise MontantInvalideError(
+            f"« {texte} » n'est pas un montant valide (exemple : 25,50)."
+        )
+    return valider_montant(Decimal(compact.replace(",", ".")))
+
+
+def formater_montant(montant: Decimal) -> str:
+    """Écrit un montant à la française : « 1 250,50 € »."""
+    return f"{montant:,.2f} €".replace(",", " ").replace(".", ",")

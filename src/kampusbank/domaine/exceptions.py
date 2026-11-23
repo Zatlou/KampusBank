@@ -51,3 +51,59 @@ class NonConnecteError(KampusBankError):
 
 class AccesRefuseError(KampusBankError):
     """La fonction demandée est réservée aux administrateurs (RG2)."""
+
+
+class MontantInvalideError(DonneeInvalideError):
+    """Le montant n'est pas un nombre positif à 2 décimales au plus (RG17)."""
+
+
+class IbanInvalideError(DonneeInvalideError):
+    """L'IBAN saisi n'a pas le format KampusBank (RG4)."""
+
+
+class TypeCompteInconnuError(KampusBankError):
+    """Le type de compte demandé n'existe pas."""
+
+
+class CompteIntrouvableError(KampusBankError):
+    """Le compte n'existe pas, ou n'appartient pas au client connecté."""
+
+
+class CompteBloqueError(KampusBankError):
+    """Le compte est bloqué : aucune opération possible, ni débit ni crédit (RG7)."""
+
+
+class CompteNonVideError(KampusBankError):
+    """Un compte ne peut être supprimé que si son solde vaut 0,00 € (RG6)."""
+
+
+class SoldeInsuffisantError(KampusBankError):
+    """Le solde deviendrait négatif (RG9, RG10)."""
+
+
+class LimiteOperationError(KampusBankError):
+    """Le montant sort des limites de l'opération (RG8 à RG10)."""
+
+
+class PlafondDepasseError(KampusBankError):
+    """Le crédit ferait dépasser le plafond du compte (Livret A, PEL)."""
+
+
+class RetraitInterditError(KampusBankError):
+    """Ce type de compte n'autorise pas les retraits (PEL)."""
+
+
+class VirementInvalideError(KampusBankError):
+    """Le compte source et le compte destinataire sont identiques."""
+
+
+class AnnulationImpossibleError(KampusBankError):
+    """La dernière opération du compte ne peut pas être annulée (RG13)."""
+
+
+class SuppressionClientImpossibleError(KampusBankError):
+    """Le client ne peut pas être supprimé (comptes non vides, administrateur)."""
+
+
+class ClientIntrouvableError(KampusBankError):
+    """Le client demandé n'existe pas."""
