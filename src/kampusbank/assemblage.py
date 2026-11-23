@@ -5,21 +5,27 @@ bcrypt, horloge système). Chaque objet reçoit ses dépendances par son
 constructeur : on peut donc en substituer d'autres dans les tests.
 """
 
+import random
 from datetime import datetime, timedelta
+from functools import partial
 from pathlib import Path
 
 from kampusbank.config.parametres import ParametresPersistance, charger_parametres
+from kampusbank.domaine.iban import generer_iban
 from kampusbank.ihm.controleurs.administration import ControleurAdministration
 from kampusbank.ihm.controleurs.authentification import ControleurAuthentification
 from kampusbank.ihm.controleurs.client import ControleurClient
+from kampusbank.ihm.controleurs.operations import ControleurOperations
 from kampusbank.ihm.fenetre import FenetrePrincipale
 from kampusbank.ihm.routeur import Ecran, Routeur
 from kampusbank.persistance.depot import Depot
 from kampusbank.persistance.depot_json import DepotJson
 from kampusbank.service.administration import ServiceAdministration
 from kampusbank.service.authentification import ServiceAuthentification
+from kampusbank.service.comptes import ServiceComptes
 from kampusbank.service.formulaires import DonneesPersonnelles
 from kampusbank.service.hachage import HacheurMotDePasse
+from kampusbank.service.operations import ServiceOperations
 from kampusbank.service.profil import ServiceProfil
 from kampusbank.service.session import Session
 
@@ -46,7 +52,17 @@ def construire_application(chemin_configuration: Path) -> FenetrePrincipale:
         horloge=datetime.now,
     )
     profil = ServiceProfil(depot, session)
-    administration = ServiceAdministration(depot, session)
+    administration = ServiceAdministration(depot, session, datetime.now)
+    comptes = ServiceComptes(
+        depot, session, partial(generer_iban, random.Random()), datetime.now
+    )
+    operations = ServiceOperations(
+        depot,
+        session,
+        montant_minimum=parametres.operations.montant_minimum,
+        retrait_maximum=parametres.operations.retrait_maximum,
+        horloge=datetime.now,
+    )
 
     admin = parametres.administrateur
     authentification.creer_administrateur_initial(
@@ -66,7 +82,10 @@ def construire_application(chemin_configuration: Path) -> FenetrePrincipale:
     controleur_authentification = ControleurAuthentification(
         fenetre, routeur, authentification
     )
-    controleur_client = ControleurClient(fenetre, routeur, profil, authentification)
+    controleur_client = ControleurClient(
+        fenetre, routeur, profil, comptes, authentification
+    )
+    controleur_operations = ControleurOperations(fenetre, routeur, comptes, operations)
     controleur_admin = ControleurAdministration(
         fenetre, routeur, administration, authentification
     )
@@ -79,6 +98,8 @@ def construire_application(chemin_configuration: Path) -> FenetrePrincipale:
         Ecran.TABLEAU_DE_BORD, controleur_client.afficher_tableau_de_bord
     )
     routeur.enregistrer(Ecran.PROFIL, controleur_client.afficher_profil)
+    routeur.enregistrer(Ecran.OPERATIONS, controleur_operations.afficher_operations)
+    routeur.enregistrer(Ecran.HISTORIQUE, controleur_operations.afficher_historique)
     routeur.enregistrer(Ecran.ACCUEIL_ADMIN, controleur_admin.afficher_accueil)
 
     routeur.aller_a(Ecran.CONNEXION)

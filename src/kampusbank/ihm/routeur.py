@@ -11,6 +11,8 @@ class Ecran(Enum):
     INSCRIPTION = auto()
     TABLEAU_DE_BORD = auto()
     PROFIL = auto()
+    OPERATIONS = auto()
+    HISTORIQUE = auto()
     ACCUEIL_ADMIN = auto()
 
 

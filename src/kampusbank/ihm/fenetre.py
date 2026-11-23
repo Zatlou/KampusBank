@@ -10,8 +10,8 @@ class FenetrePrincipale:
     def __init__(self, titre: str) -> None:
         self._racine = tk.Tk()
         self._racine.title(titre)
-        self._racine.geometry("760x580")
-        self._racine.minsize(640, 480)
+        self._racine.geometry("900x720")
+        self._racine.minsize(800, 640)
         style = ttk.Style(self._racine)
         style.configure("Titre.TLabel", font=("Helvetica", 20, "bold"))
         style.configure("Section.TLabel", font=("Helvetica", 14, "bold"))
@@ -32,5 +32,9 @@ class FenetrePrincipale:
         ecran.pack(fill="both", expand=True, padx=32, pady=24)
 
     def lancer(self) -> None:
-        """Démarre la boucle d'événements jusqu'à la fermeture de la fenêtre."""
+        """Affiche la fenêtre au premier plan et attend jusqu'à sa fermeture."""
+        self._racine.lift()
+        self._racine.attributes("-topmost", True)
+        self._racine.after_idle(self._racine.attributes, "-topmost", False)
+        self._racine.focus_force()
         self._racine.mainloop()
