@@ -33,19 +33,8 @@ class VueAccueilAdmin(Vue):
         self._on_rechercher = on_rechercher
         self._on_client = on_client
 
-        ttk.Label(self, text="Espace administrateur", style="Titre.TLabel").pack(
-            anchor="w", pady=(0, 10)
-        )
-
-        chiffres = ttk.Frame(self)
-        chiffres.pack(anchor="w", pady=(0, 12))
-        for colonne, (libelle, valeur) in enumerate(statistiques):
-            ttk.Label(chiffres, text=valeur, style="Section.TLabel").grid(
-                row=0, column=colonne, sticky="w", padx=(0, 36)
-            )
-            ttk.Label(chiffres, text=libelle).grid(
-                row=1, column=colonne, sticky="w", padx=(0, 36)
-            )
+        self._entete("Espace administrateur", "Supervision des clients et des comptes.")
+        self._tuiles(statistiques)
 
         ttk.Label(self, text="Rechercher un client", style="Section.TLabel").pack(
             anchor="w"
@@ -54,15 +43,20 @@ class VueAccueilAdmin(Vue):
         recherche.pack(anchor="w", pady=(4, 8))
         self._criteres: list[tk.StringVar] = []
         for colonne, libelle in enumerate(["Nom", "Email", "N° de compte (IBAN)"]):
-            ttk.Label(recherche, text=libelle).grid(row=0, column=colonne, sticky="w")
+            ttk.Label(recherche, text=libelle, style="Etiquette.TLabel").grid(
+                row=0, column=colonne, sticky="w"
+            )
             variable = tk.StringVar(self)
             ttk.Entry(recherche, textvariable=variable, width=22).grid(
                 row=1, column=colonne, sticky="w", padx=(0, 8)
             )
             self._criteres.append(variable)
-        ttk.Button(recherche, text="Rechercher", command=self._rechercher).grid(
-            row=1, column=3
-        )
+        ttk.Button(
+            recherche,
+            text="Rechercher",
+            command=self._rechercher,
+            style="Primaire.TButton",
+        ).grid(row=1, column=3)
         ttk.Button(recherche, text="Tout afficher", command=self._tout).grid(
             row=1, column=4, padx=(8, 0)
         )
@@ -74,16 +68,13 @@ class VueAccueilAdmin(Vue):
 
         self._placer_message()
 
-        boutons = ttk.Frame(self)
-        boutons.pack(anchor="w")
-        for texte, action in [
-            ("Fiche du client", self._fiche),
-            ("Tous les comptes", on_comptes),
-            ("Se déconnecter", on_deconnexion),
-        ]:
-            ttk.Button(boutons, text=texte, command=action).pack(
-                side="left", padx=(0, 8)
-            )
+        self._boutons(
+            [
+                ("Fiche du client", self._fiche, "Primaire.TButton"),
+                ("Tous les comptes", on_comptes, "TButton"),
+                ("Se déconnecter", on_deconnexion, "TButton"),
+            ]
+        )
 
     def afficher_clients(self, clients: list[LigneTableau]) -> None:
         """Remplace la liste des clients (résultat d'une recherche)."""

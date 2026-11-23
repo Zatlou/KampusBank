@@ -61,6 +61,17 @@ def test_rg5_plusieurs_comptes(comptes: ServiceComptes, alice: User) -> None:
     assert sorted(c.type for c in comptes.lister()) == ["COURANT", "LIVRET_A", "PEL"]
 
 
+def test_solde_total_de_tous_mes_comptes(
+    comptes: ServiceComptes, depot: DepotJson, alice: User
+) -> None:
+    for solde in ("10.50", "89.50"):
+        compte = comptes.ouvrir("COURANT")
+        compte.crediter(Decimal(solde))
+        depot.enregistrer_compte(compte)
+
+    assert comptes.solde_total() == Decimal("100.00")
+
+
 def test_type_inconnu_refuse(comptes: ServiceComptes, alice: User) -> None:
     with pytest.raises(TypeCompteInconnuError):
         comptes.ouvrir("ASSURANCE_VIE")

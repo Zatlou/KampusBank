@@ -22,9 +22,7 @@ class VueComptesAdmin(Vue):
         on_retour: Callable[[], object],
     ) -> None:
         super().__init__(parent)
-        ttk.Label(self, text="Tous les comptes", style="Titre.TLabel").pack(
-            anchor="w", pady=(0, 12)
-        )
+        self._entete("Tous les comptes", "Sélectionnez un compte pour agir dessus.")
         PanneauComptes(
             self, comptes, on_bloquer, on_historique, on_annuler, self.afficher_erreur
         ).pack(fill="x")

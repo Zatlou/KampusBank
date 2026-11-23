@@ -31,19 +31,18 @@ class VueFicheClient(Vue):
         self._on_enregistrer = on_enregistrer
         self._on_supprimer = on_supprimer
 
-        ttk.Label(self, text=titre, style="Titre.TLabel").pack(anchor="w", pady=(0, 8))
+        self._entete(titre, "Fiche client")
 
         self._champs = ChampsPersonnels(self)
         self._champs.remplir(informations)
-        self._champs.pack(fill="x")
-        actions_client = ttk.Frame(self)
-        actions_client.pack(anchor="w", pady=(4, 10))
-        ttk.Button(
-            actions_client, text="Enregistrer les modifications", command=self._valider
-        ).pack(side="left", padx=(0, 8))
-        ttk.Button(
-            actions_client, text="Supprimer le client", command=self._confirmer
-        ).pack(side="left")
+        self._champs.pack(anchor="w")
+        self._boutons(
+            [
+                ("Enregistrer les modifications", self._valider, "Primaire.TButton"),
+                ("Supprimer le client", self._confirmer, "Danger.TButton"),
+            ]
+        )
+        ttk.Separator(self).pack(fill="x", pady=(14, 10))
 
         ttk.Label(self, text="Comptes du client", style="Section.TLabel").pack(
             anchor="w"

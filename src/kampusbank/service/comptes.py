@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 from datetime import datetime
+from decimal import Decimal
 
 from kampusbank.domaine.comptes import CompteBancaire, classe_de_compte, types_de_compte
 from kampusbank.persistance.depot import Depot
@@ -32,6 +33,10 @@ class ServiceComptes:
         """Renvoie les comptes du client connecté (RG5 : il peut en avoir plusieurs)."""
         client = self._session.exiger_connexion()
         return self._depot.lister_comptes(client.id)
+
+    def solde_total(self) -> Decimal:
+        """Somme des soldes de tous les comptes du client connecté."""
+        return sum((compte.solde for compte in self.lister()), Decimal("0.00"))
 
     def consulter(self, compte_id: int) -> CompteBancaire:
         """Renvoie un compte du client connecté."""

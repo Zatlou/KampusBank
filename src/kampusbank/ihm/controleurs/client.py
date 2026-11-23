@@ -37,6 +37,7 @@ class ControleurClient:
         try:
             utilisateur = self._profil.consulter()
             comptes = self._comptes.lister()
+            solde_total = formater_montant(self._comptes.solde_total())
         except NonConnecteError:
             self._routeur.aller_a(Ecran.CONNEXION)
             return None
@@ -44,6 +45,7 @@ class ControleurClient:
             self._fenetre.conteneur,
             informations=DonneesPersonnelles.depuis_utilisateur(utilisateur),
             comptes=[_ligne_compte(compte) for compte in comptes],
+            solde_total=solde_total,
             types_de_compte=self._comptes.types_disponibles(),
             on_ouvrir_compte=lambda code: self._ouvrir_compte(vue, code),
             on_detail=self.afficher_detail,
@@ -134,4 +136,5 @@ def _ligne_compte(compte: CompteBancaire) -> LigneTableau:
             formater_montant(compte.solde),
             compte.statut.libelle,
         ),
+        "alerte" if compte.est_bloque else "",
     )

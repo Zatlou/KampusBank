@@ -21,22 +21,25 @@ class VueInscription(Vue):
         super().__init__(parent)
         self._on_inscription = on_inscription
 
-        ttk.Label(self, text="Créer un compte", style="Titre.TLabel").pack(pady=(0, 16))
+        self._entete(
+            "Créer un compte", "Quelques informations pour ouvrir votre espace client."
+        )
 
         self._champs = ChampsPersonnels(self, avec_mot_de_passe=True)
-        self._champs.pack(fill="x")
+        self._champs.pack(anchor="w")
         ttk.Label(
-            self, text="Au moins 8 caractères, dont une majuscule et un chiffre."
-        ).pack(anchor="e")
+            self,
+            text="Mot de passe : 8 caractères, dont une majuscule et un chiffre.",
+            style="Etiquette.TLabel",
+        ).pack(anchor="w", pady=(4, 0))
 
         self._placer_message()
-
-        boutons = ttk.Frame(self)
-        boutons.pack()
-        ttk.Button(boutons, text="Créer mon compte", command=self._valider).pack(
-            side="left", padx=4
+        self._boutons(
+            [
+                ("Créer mon compte", self._valider, "Primaire.TButton"),
+                ("Retour", on_retour, "TButton"),
+            ]
         )
-        ttk.Button(boutons, text="Retour", command=on_retour).pack(side="left", padx=4)
 
     def _valider(self) -> None:
         self._on_inscription(self._champs.lire(), self._champs.lire_mot_de_passe())

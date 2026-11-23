@@ -29,9 +29,7 @@ class VueOperations(Vue):
         self._comptes = comptes
         self._saisies: list[tk.StringVar] = []
 
-        ttk.Label(self, text="Opérations", style="Titre.TLabel").pack(
-            anchor="w", pady=(0, 12)
-        )
+        self._entete("Opérations", "Dépôt, retrait ou virement : choisissez un onglet.")
         onglets = ttk.Notebook(self)
         onglets.pack(fill="x")
         onglets.add(self._onglet_simple(onglets, "Déposer", on_depot), text="Dépôt")
@@ -52,7 +50,7 @@ class VueOperations(Vue):
     def _onglet_simple(
         self, parent: ttk.Notebook, verbe: str, action: ActionSimple
     ) -> ttk.Frame:
-        onglet = ttk.Frame(parent, padding=16)
+        onglet = ttk.Frame(parent, padding=20)
         compte = self._ligne_compte(onglet, 0, "Compte")
         montant = self._ligne_saisie(onglet, 1, "Montant (€)")
         libelle = self._ligne_saisie(onglet, 2, "Libellé (facultatif)")
@@ -62,8 +60,8 @@ class VueOperations(Vue):
             if compte_id is not None:
                 action(compte_id, montant.get(), libelle.get())
 
-        ttk.Button(onglet, text=verbe, command=valider).grid(
-            row=3, column=1, sticky="w", pady=(8, 0)
+        ttk.Button(onglet, text=verbe, command=valider, style="Primaire.TButton").grid(
+            row=3, column=1, sticky="w", pady=(12, 0)
         )
         return onglet
 
@@ -73,7 +71,7 @@ class VueOperations(Vue):
         action: ActionVirement,
         action_iban: ActionVirementIban,
     ) -> ttk.Frame:
-        onglet = ttk.Frame(parent, padding=16)
+        onglet = ttk.Frame(parent, padding=20)
         source = self._ligne_compte(onglet, 0, "Depuis")
 
         vers_iban = tk.BooleanVar(onglet, value=False)
@@ -101,16 +99,16 @@ class VueOperations(Vue):
             if destination_id is not None:
                 action(source_id, destination_id, montant.get(), libelle.get())
 
-        ttk.Button(onglet, text="Virer", command=valider).grid(
-            row=5, column=1, sticky="w", pady=(8, 0)
-        )
+        ttk.Button(
+            onglet, text="Virer", command=valider, style="Primaire.TButton"
+        ).grid(row=5, column=1, sticky="w", pady=(12, 0))
         return onglet
 
     def _ligne_compte(
         self, parent: ttk.Frame, ligne: int, libelle: str
     ) -> ListeDeChoix[int]:
-        ttk.Label(parent, text=libelle).grid(
-            row=ligne, column=0, sticky="w", padx=(0, 12), pady=4
+        ttk.Label(parent, text=libelle, style="Doux.TLabel").grid(
+            row=ligne, column=0, sticky="w", padx=(0, 16), pady=5
         )
         choix = ListeDeChoix(parent, self._comptes, largeur=48)
         choix.grid(row=ligne, column=1, sticky="w", pady=4)
@@ -119,8 +117,8 @@ class VueOperations(Vue):
     def _ligne_saisie(
         self, parent: ttk.Frame, ligne: int, libelle: str
     ) -> tk.StringVar:
-        ttk.Label(parent, text=libelle).grid(
-            row=ligne, column=0, sticky="w", padx=(0, 12), pady=4
+        ttk.Label(parent, text=libelle, style="Doux.TLabel").grid(
+            row=ligne, column=0, sticky="w", padx=(0, 16), pady=5
         )
         return self._champ(parent, ligne)
 

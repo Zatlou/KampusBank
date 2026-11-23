@@ -52,11 +52,11 @@ class ChampsPersonnels(ttk.Frame):
     def _ajouter_ligne(
         self, ligne: int, libelle: str, masque: bool = False
     ) -> tk.StringVar:
-        ttk.Label(self, text=libelle).grid(
-            row=ligne, column=0, sticky="w", padx=(0, 12), pady=4
+        ttk.Label(self, text=libelle, style="Doux.TLabel").grid(
+            row=ligne, column=0, sticky="w", padx=(0, 16), pady=5
         )
         variable = tk.StringVar(self)
         ttk.Entry(
-            self, textvariable=variable, width=36, show="•" if masque else ""
-        ).grid(row=ligne, column=1, sticky="ew", pady=4)
+            self, textvariable=variable, width=40, show="•" if masque else ""
+        ).grid(row=ligne, column=1, sticky="ew", pady=5)
         return variable

@@ -26,7 +26,7 @@ class VueHistoriqueCompte(Vue):
         on_retour: Callable[[], object],
     ) -> None:
         super().__init__(parent)
-        ttk.Label(self, text=titre, style="Titre.TLabel").pack(anchor="w", pady=(0, 12))
+        self._entete(titre, "Opérations du compte, les plus récentes d'abord.")
         tableau = Tableau(self, _COLONNES, hauteur=14)
         tableau.remplir(lignes)
         tableau.pack(fill="both", expand=True)

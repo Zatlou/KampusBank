@@ -38,14 +38,18 @@ class PanneauComptes(ttk.Frame):
 
         boutons = ttk.Frame(self)
         boutons.pack(anchor="w", pady=(6, 0))
-        for texte, action in [
-            ("Bloquer / Débloquer", on_bloquer),
-            ("Historique du compte", on_historique),
-            ("Annuler la dernière opération", self._confirmer(on_annuler)),
+        for texte, action, style in [
+            ("Historique du compte", on_historique, "TButton"),
+            ("Bloquer / Débloquer", on_bloquer, "TButton"),
+            (
+                "Annuler la dernière opération",
+                self._confirmer(on_annuler),
+                "Danger.TButton",
+            ),
         ]:
-            ttk.Button(boutons, text=texte, command=self._sur_selection(action)).pack(
-                side="left", padx=(0, 8)
-            )
+            ttk.Button(
+                boutons, text=texte, command=self._sur_selection(action), style=style
+            ).pack(side="left", padx=(0, 10))
 
     def _sur_selection(self, action: ActionCompte) -> Callable[[], None]:
         def executer() -> None:

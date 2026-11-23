@@ -8,7 +8,7 @@ from kampusbank.ihm.vues.base import Vue
 
 
 class VueConnexion(Vue):
-    """Saisie de l'email et du mot de passe."""
+    """Saisie de l'email et du mot de passe, au centre de l'écran."""
 
     def __init__(
         self,
@@ -21,34 +21,34 @@ class VueConnexion(Vue):
         self._email = tk.StringVar(self)
         self._mot_de_passe = tk.StringVar(self)
 
-        ttk.Label(self, text="KampusBank", style="Titre.TLabel").pack(pady=(24, 4))
-        ttk.Label(self, text="Connexion à votre espace").pack(pady=(0, 16))
+        bloc = ttk.Frame(self)
+        bloc.pack(expand=True)
 
-        formulaire = ttk.Frame(self)
-        formulaire.pack()
-        ttk.Label(formulaire, text="Email").grid(
-            row=0, column=0, sticky="w", padx=(0, 12), pady=4
-        )
-        champ_email = ttk.Entry(formulaire, textvariable=self._email, width=32)
-        champ_email.grid(row=0, column=1, pady=4)
-        ttk.Label(formulaire, text="Mot de passe").grid(
-            row=1, column=0, sticky="w", padx=(0, 12), pady=4
-        )
+        ttk.Label(bloc, text="Connexion", style="Titre.TLabel").pack(anchor="w")
+        ttk.Label(
+            bloc,
+            text="Accédez à votre espace client ou administrateur.",
+            style="Doux.TLabel",
+        ).pack(anchor="w", pady=(2, 20))
+
+        ttk.Label(bloc, text="Email", style="Etiquette.TLabel").pack(anchor="w")
+        champ_email = ttk.Entry(bloc, textvariable=self._email, width=36)
+        champ_email.pack(fill="x", pady=(2, 12))
+        ttk.Label(bloc, text="Mot de passe", style="Etiquette.TLabel").pack(anchor="w")
         champ_mot_de_passe = ttk.Entry(
-            formulaire, textvariable=self._mot_de_passe, show="•", width=32
+            bloc, textvariable=self._mot_de_passe, show="•", width=36
         )
-        champ_mot_de_passe.grid(row=1, column=1, pady=4)
+        champ_mot_de_passe.pack(fill="x", pady=(2, 18))
 
-        self._placer_message()
+        ttk.Button(
+            bloc, text="Se connecter", style="Primaire.TButton", command=self._valider
+        ).pack(fill="x")
+        ttk.Button(bloc, text="Créer un compte", command=on_inscription).pack(
+            fill="x", pady=(8, 0)
+        )
 
-        boutons = ttk.Frame(self)
-        boutons.pack()
-        ttk.Button(boutons, text="Se connecter", command=self._valider).pack(
-            side="left", padx=4
-        )
-        ttk.Button(boutons, text="Créer un compte", command=on_inscription).pack(
-            side="left", padx=4
-        )
+        self._message = ttk.Label(bloc, text="", wraplength=340, justify="left")
+        self._message.pack(anchor="w", pady=12)
 
         champ_mot_de_passe.bind("<Return>", lambda _evenement: self._valider())
         champ_email.focus_set()

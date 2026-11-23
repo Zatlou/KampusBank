@@ -21,24 +21,25 @@ class VueDetailCompte(Vue):
         super().__init__(parent)
         self._on_supprimer = on_supprimer
 
-        ttk.Label(self, text=titre, style="Titre.TLabel").pack(anchor="w", pady=(0, 16))
+        self._entete(titre, "Détail du compte")
 
         fiche = ttk.Frame(self)
         fiche.pack(anchor="w")
         for ligne, (libelle, valeur) in enumerate(informations):
-            ttk.Label(fiche, text=f"{libelle} :").grid(
-                row=ligne, column=0, sticky="w", padx=(0, 16), pady=3
+            ttk.Label(fiche, text=libelle, style="Doux.TLabel").grid(
+                row=ligne, column=0, sticky="w", padx=(0, 24), pady=5
             )
-            ttk.Label(fiche, text=valeur).grid(row=ligne, column=1, sticky="w", pady=3)
+            ttk.Label(fiche, text=valeur, style="Section.TLabel").grid(
+                row=ligne, column=1, sticky="w", pady=5
+            )
 
         self._placer_message()
-
-        boutons = ttk.Frame(self)
-        boutons.pack(anchor="w")
-        ttk.Button(boutons, text="Supprimer ce compte", command=self._confirmer).pack(
-            side="left", padx=(0, 8)
+        self._boutons(
+            [
+                ("Retour", on_retour, "TButton"),
+                ("Supprimer ce compte", self._confirmer, "Danger.TButton"),
+            ]
         )
-        ttk.Button(boutons, text="Retour", command=on_retour).pack(side="left")
 
     def _confirmer(self) -> None:
         if messagebox.askyesno(

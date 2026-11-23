@@ -128,4 +128,5 @@ def _ligne(transaction: Transaction, ibans: dict[int, str]) -> LigneTableau:
             transaction.libelle,
             f"{signe} {formater_montant(transaction.montant)}",
         ),
+        "credit" if transaction.est_credit else "debit",
     )

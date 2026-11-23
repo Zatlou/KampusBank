@@ -206,6 +206,7 @@ class ControleurAdministration:
                     formater_montant(c.solde),
                     c.statut.libelle,
                 ),
+                "alerte" if c.est_bloque else "",
             )
             for c in comptes
         ]
@@ -225,4 +226,5 @@ def _ligne_transaction(transaction: Transaction) -> LigneTableau:
             transaction.libelle,
             f"{signe} {formater_montant(transaction.montant)}",
         ),
+        "credit" if transaction.est_credit else "debit",
     )

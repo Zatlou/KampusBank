@@ -15,25 +15,26 @@ _INFORMATIONS = [
     ("Email", "email"),
     ("Téléphone", "telephone"),
     ("Adresse", "adresse"),
-    ("Date de naissance", "date_naissance"),
+    ("Naissance", "date_naissance"),
 ]
 
 _COLONNES_COMPTES = [
-    Colonne("Type", 150),
-    Colonne("IBAN", 290),
-    Colonne("Solde", 130, "e"),
-    Colonne("Statut", 90, "center"),
+    Colonne("Type", 160),
+    Colonne("IBAN", 300),
+    Colonne("Solde", 140, "e"),
+    Colonne("Statut", 100, "center"),
 ]
 
 
 class VueTableauDeBord(Vue):
-    """Informations personnelles, liste des comptes et accès aux opérations."""
+    """Solde total, comptes, informations personnelles et accès aux opérations."""
 
     def __init__(
         self,
         parent: tk.Misc,
         informations: DonneesPersonnelles,
         comptes: list[LigneTableau],
+        solde_total: str,
         types_de_compte: list[tuple[str, str]],
         on_ouvrir_compte: Callable[[str], None],
         on_detail: Callable[[int], None],
@@ -46,50 +47,53 @@ class VueTableauDeBord(Vue):
         self._on_ouvrir_compte = on_ouvrir_compte
         self._on_detail = on_detail
 
-        ttk.Label(
-            self, text=f"Bonjour {informations.prenom}", style="Titre.TLabel"
-        ).pack(anchor="w", pady=(0, 12))
-
-        ttk.Label(self, text="Mes informations", style="Section.TLabel").pack(
-            anchor="w"
-        )
-        bloc = ttk.Frame(self)
-        bloc.pack(anchor="w", pady=(4, 12))
-        for position, (libelle, attribut) in enumerate(_INFORMATIONS):
-            ligne, colonne = divmod(position, 2)
-            ttk.Label(bloc, text=f"{libelle} :").grid(
-                row=ligne, column=colonne * 2, sticky="w", padx=(0, 6), pady=1
-            )
-            ttk.Label(bloc, text=getattr(informations, attribut)).grid(
-                row=ligne, column=colonne * 2 + 1, sticky="w", padx=(0, 32), pady=1
-            )
+        self._entete(f"Bonjour {informations.prenom}", "Voici l'état de vos comptes.")
+        self._tuiles([("Solde total", solde_total), ("Comptes", str(len(comptes)))])
 
         ttk.Label(self, text="Mes comptes", style="Section.TLabel").pack(anchor="w")
-        self._tableau = Tableau(self, _COLONNES_COMPTES, hauteur=6)
+        ttk.Label(
+            self,
+            text="Double-cliquez sur un compte pour voir son détail.",
+            style="Etiquette.TLabel",
+        ).pack(anchor="w")
+        self._tableau = Tableau(self, _COLONNES_COMPTES, hauteur=5)
         self._tableau.remplir(comptes)
         self._tableau.sur_double_clic(on_detail)
-        self._tableau.pack(fill="x", pady=(4, 8))
+        self._tableau.pack(fill="x", pady=(6, 10))
 
         ouverture = ttk.Frame(self)
         ouverture.pack(anchor="w")
-        ttk.Label(ouverture, text="Ouvrir un nouveau compte :").pack(side="left")
-        self._choix_type = ListeDeChoix(ouverture, types_de_compte, largeur=20)
+        ttk.Label(ouverture, text="Ouvrir un compte :", style="Doux.TLabel").pack(
+            side="left"
+        )
+        self._choix_type = ListeDeChoix(ouverture, types_de_compte, largeur=18)
         self._choix_type.pack(side="left", padx=8)
         ttk.Button(ouverture, text="Ouvrir", command=self._ouvrir).pack(side="left")
 
         self._placer_message()
+        self._boutons(
+            [
+                ("Faire une opération", on_operations, "Primaire.TButton"),
+                ("Historique", on_historique, "TButton"),
+                ("Voir le détail", self._detail, "TButton"),
+                ("Mon profil", on_profil, "TButton"),
+                ("Se déconnecter", on_deconnexion, "TButton"),
+            ]
+        )
 
-        boutons = ttk.Frame(self)
-        boutons.pack(anchor="w")
-        for texte, action in [
-            ("Voir le détail", self._detail),
-            ("Opérations", on_operations),
-            ("Historique", on_historique),
-            ("Mon profil", on_profil),
-            ("Se déconnecter", on_deconnexion),
-        ]:
-            ttk.Button(boutons, text=texte, command=action).pack(
-                side="left", padx=(0, 8)
+        ttk.Separator(self).pack(fill="x", pady=(18, 10))
+        ttk.Label(self, text="Mes informations", style="Section.TLabel").pack(
+            anchor="w"
+        )
+        bloc = ttk.Frame(self)
+        bloc.pack(anchor="w", pady=(6, 0))
+        for position, (libelle, attribut) in enumerate(_INFORMATIONS):
+            ligne, colonne = divmod(position, 3)
+            ttk.Label(bloc, text=libelle, style="Etiquette.TLabel").grid(
+                row=ligne * 2, column=colonne, sticky="w", padx=(0, 40)
+            )
+            ttk.Label(bloc, text=getattr(informations, attribut)).grid(
+                row=ligne * 2 + 1, column=colonne, sticky="w", padx=(0, 40), pady=(0, 8)
             )
 
     def _ouvrir(self) -> None:
