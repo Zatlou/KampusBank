@@ -22,3 +22,8 @@ echecs_max = 5
 duree_blocage_minutes = 15
 # Coût du hachage bcrypt (4 à 31) : +1 double le temps de calcul
 cout_bcrypt = 12
+
+[operations]
+# RG8 à RG10, en texte pour rester exacts (jamais de nombre à virgule)
+montant_minimum = "1.00"
+retrait_maximum = "1000.00"

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pathlib import Path
 
 from kampusbank.config.parametres import charger_parametres
@@ -22,6 +23,10 @@ date_naissance = "02/03/1995"
 echecs_max = 3
 duree_blocage_minutes = 10
 cout_bcrypt = 4
+
+[operations]
+montant_minimum = "1.00"
+retrait_maximum = "500.00"
 """
 
 
@@ -37,6 +42,7 @@ def test_charge_les_parametres_types(tmp_path: Path) -> None:
     assert parametres.securite.duree_blocage_minutes == 10
     assert parametres.securite.cout_bcrypt == 4
     assert parametres.administrateur.date_naissance == "02/03/1995"
+    assert parametres.operations.retrait_maximum == Decimal("500.00")
 
 
 def test_fichier_de_donnees_relatif_au_fichier_de_config(tmp_path: Path) -> None:

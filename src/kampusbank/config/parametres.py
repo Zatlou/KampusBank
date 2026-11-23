@@ -2,6 +2,7 @@
 
 import tomllib
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 
 
@@ -36,12 +37,21 @@ class ParametresSecurite:
 
 
 @dataclass(frozen=True)
+class ParametresOperations:
+    """Limites des opérations bancaires (RG8 à RG10)."""
+
+    montant_minimum: Decimal
+    retrait_maximum: Decimal
+
+
+@dataclass(frozen=True)
 class Parametres:
     """Ensemble des paramètres lus dans le fichier de configuration."""
 
     persistance: ParametresPersistance
     administrateur: ParametresAdministrateur
     securite: ParametresSecurite
+    operations: ParametresOperations
 
 
 def charger_parametres(chemin: Path) -> Parametres:
@@ -57,6 +67,7 @@ def charger_parametres(chemin: Path) -> Parametres:
     persistance = brut["persistance"]
     administrateur = brut["administrateur"]
     securite = brut["securite"]
+    operations = brut["operations"]
 
     return Parametres(
         persistance=ParametresPersistance(
@@ -76,5 +87,9 @@ def charger_parametres(chemin: Path) -> Parametres:
             echecs_max=int(securite["echecs_max"]),
             duree_blocage_minutes=int(securite["duree_blocage_minutes"]),
             cout_bcrypt=int(securite["cout_bcrypt"]),
+        ),
+        operations=ParametresOperations(
+            montant_minimum=Decimal(str(operations["montant_minimum"])),
+            retrait_maximum=Decimal(str(operations["retrait_maximum"])),
         ),
     )
