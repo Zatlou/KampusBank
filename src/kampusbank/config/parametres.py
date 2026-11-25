@@ -7,11 +7,23 @@ from pathlib import Path
 
 
 @dataclass(frozen=True)
+class ParametresMySQL:
+    """Connexion à la base MySQL (persistance facultative)."""
+
+    hote: str
+    port: int
+    utilisateur: str
+    mot_de_passe: str
+    base: str
+
+
+@dataclass(frozen=True)
 class ParametresPersistance:
-    """Type de persistance choisi et emplacement du fichier de données."""
+    """Type de persistance choisi, fichier JSON et, en option, base MySQL."""
 
     type: str
     fichier: Path
+    mysql: ParametresMySQL | None = None
 
 
 @dataclass(frozen=True)
@@ -73,6 +85,7 @@ def charger_parametres(chemin: Path) -> Parametres:
         persistance=ParametresPersistance(
             type=str(persistance["type"]),
             fichier=chemin.parent / str(persistance["fichier"]),
+            mysql=_lire_mysql(persistance.get("mysql")),
         ),
         administrateur=ParametresAdministrateur(
             email=str(administrateur["email"]),
@@ -92,4 +105,16 @@ def charger_parametres(chemin: Path) -> Parametres:
             montant_minimum=Decimal(str(operations["montant_minimum"])),
             retrait_maximum=Decimal(str(operations["retrait_maximum"])),
         ),
+    )
+
+
+def _lire_mysql(section: dict[str, object] | None) -> ParametresMySQL | None:
+    if section is None:
+        return None
+    return ParametresMySQL(
+        hote=str(section["hote"]),
+        port=int(str(section["port"])),
+        utilisateur=str(section["utilisateur"]),
+        mot_de_passe=str(section["mot_de_passe"]),
+        base=str(section["base"]),
     )

@@ -20,6 +20,7 @@ from kampusbank.ihm.fenetre import FenetrePrincipale
 from kampusbank.ihm.routeur import Ecran, Routeur
 from kampusbank.persistance.depot import Depot
 from kampusbank.persistance.depot_json import DepotJson
+from kampusbank.persistance.depot_mysql import DepotMySQL
 from kampusbank.service.administration import ServiceAdministration
 from kampusbank.service.authentification import ServiceAuthentification
 from kampusbank.service.comptes import ServiceComptes
@@ -34,6 +35,11 @@ def creer_depot(parametres: ParametresPersistance) -> Depot:
     """Choisit l'implémentation de la persistance indiquée dans la configuration."""
     if parametres.type == "json":
         return DepotJson(parametres.fichier)
+    if parametres.type == "mysql" and parametres.mysql is not None:
+        base = parametres.mysql
+        return DepotMySQL(
+            base.hote, base.port, base.utilisateur, base.mot_de_passe, base.base
+        )
     raise ValueError(f"Type de persistance inconnu : « {parametres.type} ».")
 
 

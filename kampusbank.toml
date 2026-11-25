@@ -6,6 +6,14 @@ type = "json"
 # Chemin relatif au dossier de ce fichier
 fichier = "donnees/kampusbank.json"
 
+[persistance.mysql]
+# Utilisé seulement si type = "mysql" ; base préparée par sql/installation.sql
+hote = "127.0.0.1"
+port = 3306
+utilisateur = "kampusbank"
+mot_de_passe = "kampusbank"
+base = "kampusbank"
+
 [administrateur]
 # Créé au premier lancement s'il n'existe pas encore ; le mot de passe est alors haché.
 email = "admin@kampusbank.fr"
